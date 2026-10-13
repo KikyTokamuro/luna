@@ -20,6 +20,7 @@ import DayCell from '../components/DayCell.js';
  * @param {object|null} props.selLog лог выбранного дня
  * @param {(key: string) => void} props.onTogglePeriod
  * @param {(sym: string) => void} props.onToggleSymptom
+ * @param {() => void} props.onToggleSex
  * @param {string} props.noteDraft черновик заметки
  * @param {(v: string) => void} props.setNoteDraft
  * @param {() => void} props.onSaveNote
@@ -27,7 +28,7 @@ import DayCell from '../components/DayCell.js';
 export default function CalendarView({
   today, todayKey, month, setMonth, selKey, setSelKey,
   periodSet, logs, ctx, stSel, selLog,
-  onTogglePeriod, onToggleSymptom,
+  onTogglePeriod, onToggleSymptom, onToggleSex,
   noteDraft, setNoteDraft, onSaveNote
 }) {
   const cells = monthGrid(month.getFullYear(), month.getMonth());
@@ -100,6 +101,19 @@ export default function CalendarView({
               ${s}
             </button>`)}
         </div>
+      </div>
+
+      <div class="mt-4">
+        <div class="text-xs text-slate-500 mb-2">Интимная жизнь</div>
+        <button onClick=${onToggleSex}
+          class=${'text-sm rounded-full px-4 py-2 transition ' +
+            (selLog && selLog.sex
+              ? 'bg-rose-100 text-rose-700 hover:bg-rose-200'
+              : 'bg-rose-600 text-white hover:bg-rose-700')}>
+          ${selLog && selLog.sex
+            ? html`<i class="fa-solid fa-xmark mr-1.5"></i>Убрать отметку`
+            : html`<i class="fa-solid fa-heart mr-1.5"></i>Половой акт`}
+        </button>
       </div>
 
       <div class="mt-4">

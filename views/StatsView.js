@@ -1,6 +1,6 @@
 import { html } from '../lib/html.js';
 import { useState } from 'https://esm.sh/preact@11.0.1/hooks';
-import { fromKey, diffDays, fmtLong, fmtShort } from '../lib/dates.js';
+import { toKey, fromKey, diffDays, fmtLong, fmtShort, MONTHS } from '../lib/dates.js';
 import Card from '../components/Card.js';
 
 /**
@@ -16,16 +16,46 @@ const cycleWord = n => {
 };
 
 /**
+ * Склонение слова "раз" по количеству.
+ * @param {number} n
+ * @returns {string}
+ */
+const timesWord = n => {
+  const a = n % 10, b = n % 100;
+  if (a === 1 && b !== 11) return 'раз';
+  if (a >= 2 && a <= 4 && (b < 12 || b > 14)) return 'раза';
+  return 'раз';
+};
+
+/**
  * Вкладка "Статистика".
  * @param {{
- *   today: Date, 
- *   ctx: object, 
- *   pred: object|null
+ *   today: Date,
+ *   ctx: object,
+ *   pred: object|null,
+ *   logs: Record<string, object>
  * }} props
  */
-export default function StatsView({ today, ctx, pred }) {
+export default function StatsView({ today, ctx, pred, logs }) {
   const curCycleDay = ctx.runs.length ? diffDays(today, fromKey(ctx.runs[ctx.runs.length - 1].start)) + 1 : null;
   const daysToNext = pred ? diffDays(pred.nextStart, today) : null;
+
+  // Отметки полового акта: всего, за текущий месяц, последняя дата, средний интервал.
+  const monthPrefix = toKey(new Date(today.getFullYear(), today.getMonth(), 1)).slice(0, 7);
+  const sexKeys = Object.values(logs)
+    .filter(l => l && l.sex && l.date <= toKey(today))
+    .map(l => l.date)
+    .sort();
+  const sexTotal = sexKeys.length;
+  const sexMonth = sexKeys.filter(k => k.startsWith(monthPrefix)).length;
+  const lastSex = sexKeys.length ? fromKey(sexKeys[sexKeys.length - 1]) : null;
+  let sexAvgGap = null;
+
+  if (sexKeys.length > 1) {
+    let sum = 0;
+    for (let i = 1; i < sexKeys.length; i++) sum += diffDays(fromKey(sexKeys[i]), fromKey(sexKeys[i - 1]));
+    sexAvgGap = Math.round(sum / (sexKeys.length - 1));
+  }
 
   const yearList = ctx.cycles.map(c => c.start.getFullYear());
   const minY = yearList.length ? Math.min(...yearList) : null;
@@ -44,6 +74,10 @@ export default function StatsView({ today, ctx, pred }) {
       <${Card} title=${daysToNext != null && daysToNext < 0 ? 'Задержка' : 'Следующая менструация'}
         value=${pred ? fmtLong(pred.nextStart) : '-'}
         accent=${daysToNext != null && daysToNext < 0 ? 'text-amber-600' : 'text-slate-800'} />
+      <${Card} title="Половые акты" value=${sexTotal} accent="text-rose-600"
+        sub="отметок за все время" />
+      <${Card} title="Половые акты за месяц" value=${sexMonth}
+        sub=${MONTHS[today.getMonth()] + ' ' + today.getFullYear()} />
     </div>
 
     ${pred && html`
@@ -61,6 +95,26 @@ export default function StatsView({ today, ctx, pred }) {
             <span class="font-medium text-violet-600 text-right">${fmtShort(pred.fertileStart)} – ${fmtShort(pred.fertileEnd)}</span></div>
         </div>
       </div>`}
+
+    <div class="bg-white rounded-2xl shadow-sm border border-rose-100 p-4">
+      <div class="font-semibold text-slate-800 mb-3">Интимная жизнь</div>
+      ${sexTotal ? html`
+        <div class="space-y-2.5 text-sm">
+          <div class="flex flex-col justify-between items-baseline gap-2">
+            <span class="text-slate-500 shrink-0">Всего</span>
+            <span class="font-medium text-right">${sexTotal} ${timesWord(sexTotal)}</span></div>
+          <div class="flex flex-col justify-between items-baseline gap-2">
+            <span class="text-slate-500 shrink-0">В этом месяце</span>
+            <span class="font-medium text-right">${sexMonth} ${timesWord(sexMonth)}</span></div>
+          <div class="flex flex-col justify-between items-baseline gap-2">
+            <span class="text-slate-500 shrink-0">Последний раз</span>
+            <span class="font-medium text-right">${fmtLong(lastSex)} ${lastSex.getFullYear()}</span></div>
+          <div class="flex flex-col justify-between items-baseline gap-2">
+            <span class="text-slate-500 shrink-0">Средняя частота</span>
+            <span class="font-medium text-rose-600 text-right">${sexAvgGap != null ? 'каждые ' + sexAvgGap + ' дн.' : 'нужно 2 и более отметки'}</span></div>
+        </div>` : html`
+        <div class="text-sm text-slate-400">Отметки половых актов появятся здесь - добавьте их в панели дня на вкладке "Календарь".</div>`}
+    </div>
 
     ${ctx.cycles.length > 0 && html`
       <div class="bg-white rounded-2xl shadow-sm border border-rose-100 p-4">

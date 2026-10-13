@@ -12,21 +12,22 @@ import StatsView from './views/StatsView.js';
 import SettingsView from './views/SettingsView.js';
 
 /**
- * Запись лога "пустая" - нет ни симптомов, ни заметки.
+ * Запись лога "пустая" - нет ни симптомов, ни заметки, ни отметки полового акта.
  * Такие записи не храним: при сохранении удаляются из БД.
  * @param {{
- *   symptoms?: string[], 
- *   note?: string
+ *   symptoms?: string[],
+ *   note?: string,
+ *   sex?: boolean
  * }} rec
  * @returns {boolean}
  */
-const isEmptyLog = rec => !(rec.symptoms && rec.symptoms.length) && !(rec.note || '').trim();
+const isEmptyLog = rec => !(rec.symptoms && rec.symptoms.length) && !(rec.note || '').trim() && !rec.sex;
 
 /**
  * @property {Date} today текущий день (один раз на сессию)
  * @property {string} tab активная вкладка: calendar | stats | settings
  * @property {Set<string>} periodSet дни месячных (ключи 'YYYY-MM-DD')
- * @property {Record<string, object>} logs логи по дате: {date, note, symptoms[]}
+ * @property {Record<string, object>} logs логи по дате: {date, note, symptoms[], sex?}
  * @property {{cycle: number, period: number}} settings дефолтная длина цикла/месячных
  * @property {string} selKey выбранная в календаре дата
  */
@@ -48,8 +49,8 @@ function App() {
   const [noteDraft, setNoteDraft] = useState('');
   const [installEvt, setInstallEvt] = useState(null);
 
-  // Начальная загрузка + миграция: пустые записи логов (без симптомов и заметки)
-  // удаляем из БД, чтобы не оставались "мусорные" точки на календаре.
+  // Начальная загрузка + миграция: пустые записи логов (без симптомов, заметки
+  // и отметки полового акта) удаляем из БД, чтобы не оставались "мусорные" точки на календаре.
   useEffect(() => {
     (async () => {
       try {
@@ -157,6 +158,17 @@ function App() {
     await saveLog(selKey, { ...cur, date: selKey, symptoms: syms });
   };
 
+  /**
+   * Ставит/снимает отметку полового акта в логе выбранного дня.
+   */
+  const toggleSex = async () => {
+    if (selKey > todayKey) return;
+
+    const cur = logs[selKey] || { date: selKey, note: '', symptoms: [] };
+
+    await saveLog(selKey, { ...cur, date: selKey, sex: !cur.sex });
+  };
+
   /** 
    * Сохраняет черновик заметки. 
    */
@@ -261,10 +273,11 @@ function App() {
             periodSet=${periodSet} logs=${logs}
             ctx=${ctx} stSel=${stSel} selLog=${selLog}
             onTogglePeriod=${togglePeriod} onToggleSymptom=${toggleSymptom}
+            onToggleSex=${toggleSex}
             noteDraft=${noteDraft} setNoteDraft=${setNoteDraft} onSaveNote=${saveNote} />`}
 
         ${tab === 'stats' && html`
-          <${StatsView} today=${today} ctx=${ctx} pred=${pred} />`}
+          <${StatsView} today=${today} ctx=${ctx} pred=${pred} logs=${logs} />`}
 
         ${tab === 'settings' && html`
           <${SettingsView}
