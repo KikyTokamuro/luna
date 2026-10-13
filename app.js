@@ -1,10 +1,15 @@
-import { render } from 'https://esm.sh/preact@11.0.1';
-import { useState, useEffect, useMemo } from 'https://esm.sh/preact@11.0.1/hooks';
+import { render } from 'preact';
+import { useState, useEffect, useMemo } from 'preact/hooks';
+import { registerSW } from 'virtual:pwa-register';
+
+import './styles.css';
+
 import { html } from './lib/html.js';
-import { toKey, fromKey, diffDays } from './lib/dates.js';
+import { toKey } from './lib/dates.js';
 import { kvGet, all, putRec, delRec, clearStore, kvSet, STORE_PERIODS, STORE_LOGS, STORE_KV } from './lib/db.js';
 import { buildCtx, predict, statusOf } from './lib/cycle.js';
 import { DEFAULT_SETTINGS } from './lib/constants.js';
+
 import Header from './components/Header.js';
 import BottomNav from './components/BottomNav.js';
 import CalendarView from './views/CalendarView.js';
@@ -291,3 +296,7 @@ function App() {
 }
 
 render(html`<${App} />`, document.getElementById('app'));
+
+// Регистрация service worker, сгенерированного vite-plugin-pwa:
+// precache всего билда, обновление кэша автоматически (autoUpdate).
+registerSW({ immediate: true });

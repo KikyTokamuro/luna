@@ -1,5 +1,5 @@
 import { html } from '../lib/html.js';
-import { useState } from 'https://esm.sh/preact@11.0.1/hooks';
+import { useState } from 'preact/hooks';
 import { toKey, fromKey, diffDays, fmtLong, fmtShort, MONTHS } from '../lib/dates.js';
 import Card from '../components/Card.js';
 

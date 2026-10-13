@@ -12,7 +12,7 @@ export default function Header({ installEvt, onInstall }) {
     <header class="sticky top-0 z-10 bg-rose-600 text-white shadow-sm">
       <div class="max-w-lg mx-auto px-4 py-3 flex items-center justify-between">
         <div class="flex items-center gap-2">
-          <i class="fa-solid fa-moon text-xl"></i>
+          <i class="fa-solid fa-droplet text-xl"></i>
           <h1 class="font-semibold text-lg">Луна - календарь цикла</h1>
         </div>
         ${installEvt && html`
