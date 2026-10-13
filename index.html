@@ -35,7 +35,10 @@
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function () {
-      navigator.serviceWorker.register('./sw.js').catch(function (e) { console.warn('SW error', e); });
+      navigator.serviceWorker.register('./sw.js', { type: 'module' })
+        .catch(function (e) { 
+          console.warn('SW error', e); 
+        });
     });
   }
 </script>

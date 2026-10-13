@@ -1,5 +1,6 @@
 import { html } from '../lib/html.js';
 import { kvSet } from '../lib/db.js';
+import { APP_NAME, APP_VERSION, AUTHOR_URL } from '../lib/constants.js';
 
 /**
  * Вкладка "Настройки".
@@ -55,6 +56,18 @@ export default function SettingsView({ settings, setSettings, periodSet, logs, o
         </label>
         <button onClick=${onClearAll} class="text-sm border border-rose-200 text-rose-600 rounded-full px-4 py-2 hover:bg-rose-50 transition"><i class="fa-solid fa-trash-can mr-1.5"></i>Удалить все данные</button>
       </div>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-rose-100 p-4">
+      <div class="font-semibold text-slate-800 mb-3">Версия</div>
+      <div class="flex items-baseline justify-between gap-2 text-sm">
+        <span class="text-slate-600">${APP_NAME}</span>
+        <span class="font-medium text-slate-800 shrink-0">v${APP_VERSION}</span>
+      </div>
+      <a href=${AUTHOR_URL} target="_blank" rel="noopener noreferrer"
+        class="mt-2 inline-flex items-center gap-1.5 text-sm text-rose-600 hover:text-rose-700 transition">
+        <i class="fa-solid fa-globe"></i>Сайт автора - kikytokamuro.space
+      </a>
     </div>
   `;
 }

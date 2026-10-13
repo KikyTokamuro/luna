@@ -1,4 +1,6 @@
-const CACHE = 'luna-v9';
+import { APP_VERSION } from './lib/constants.js';
+
+const CACHE = `luna-v${APP_VERSION}`;
 const ASSETS = [
   './',
   './index.html',
