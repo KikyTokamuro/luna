@@ -2,6 +2,7 @@ import { render } from 'preact';
 import { useState, useEffect, useMemo } from 'preact/hooks';
 import { registerSW } from 'virtual:pwa-register';
 
+import '@fortawesome/fontawesome-free/css/all.min.css';
 import './styles.css';
 
 import { html } from './lib/html.js';
