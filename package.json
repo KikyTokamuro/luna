@@ -1,7 +1,7 @@
 {
-  "name": "luna",
+  "name": "@kikytokamuro/luna",
   "private": true,
-  "version": "1.1.0",
+  "version": "1.2.0",
   "type": "module",
   "description": "Menstrual cycle calendar",
   "scripts": {
@@ -21,6 +21,7 @@
   "homepage": "https://github.com/KikyTokamuro/luna#readme",
   "dependencies": {
     "htm": "^3.1.1",
+    "i18n-js": "^4.5.4",
     "preact": "^11.0.1"
   },
   "devDependencies": {
