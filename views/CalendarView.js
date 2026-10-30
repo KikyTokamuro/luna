@@ -1,5 +1,6 @@
+import { t } from '../lib/i18n.js';
 import { html } from '../lib/html.js';
-import { MONTHS, WD, toKey, fromKey, fmtLong, monthGrid } from '../lib/dates.js';
+import { monthName, weekdayNames, toKey, fromKey, fmtLong, monthGrid } from '../lib/dates.js';
 import { statusOf, phaseName } from '../lib/cycle.js';
 import { SYMPTOMS } from '../lib/constants.js';
 import DayCell from '../components/DayCell.js';
@@ -11,7 +12,7 @@ import DayCell from '../components/DayCell.js';
  * @param {string} props.todayKey
  * @param {Date} props.month first day of the displayed month
  * @param {(m: Date) => void} props.setMonth
- * @param {string} props.selKey выбранная date
+ * @param {string} props.selKey selected date
  * @param {(key: string) => void} props.setSelKey
  * @param {Set<string>} props.periodSet
  * @param {Record<string, object>} props.logs
@@ -38,13 +39,13 @@ export default function CalendarView({
     <div class="bg-white rounded-2xl shadow-sm border border-rose-100 p-4">
       <div class="flex items-center justify-between mb-3">
         <button onClick=${() => setMonth(m => new Date(m.getFullYear(), m.getMonth() - 1, 1))}
-          aria-label="Предыдущий месяц" class="w-9 h-9 rounded-full hover:bg-rose-50 text-slate-600 text-lg"><i class="fa-solid fa-chevron-left"></i></button>
-        <div class="font-semibold text-slate-800">${MONTHS[month.getMonth()]} ${month.getFullYear()}</div>
+          aria-label=${t("calendar.previousMonth")} class="w-9 h-9 rounded-full hover:bg-rose-50 text-slate-600 text-lg"><i class="fa-solid fa-chevron-left"></i></button>
+        <div class="font-semibold text-slate-800">${monthName(month)} ${month.getFullYear()}</div>
         <button onClick=${() => setMonth(m => new Date(m.getFullYear(), m.getMonth() + 1, 1))}
-          aria-label="Следующий месяц" class="w-9 h-9 rounded-full hover:bg-rose-50 text-slate-600 text-lg"><i class="fa-solid fa-chevron-right"></i></button>
+          aria-label=${t("calendar.nextMonth")} class="w-9 h-9 rounded-full hover:bg-rose-50 text-slate-600 text-lg"><i class="fa-solid fa-chevron-right"></i></button>
       </div>
       <div class="grid grid-cols-7 gap-1 mb-1">
-        ${WD.map(w => html`<div key=${w} class="text-center text-xs text-slate-400 py-1">${w}</div>`)}
+        ${weekdayNames().map(w => html`<div key=${w} class="text-center text-xs text-slate-400 py-1">${w}</div>`)}
       </div>
       <div class="grid grid-cols-7 gap-y-1.5">
         ${cells.map((d, i) => d ? html`
@@ -53,18 +54,18 @@ export default function CalendarView({
           : html`<div key=${'e' + i}></div>`)}
       </div>
       <div class="flex flex-wrap justify-center gap-x-4 gap-y-1 mt-4 text-xs text-slate-500">
-        <span class="flex items-center gap-1.5"><i class="fa-solid fa-circle text-rose-500 text-[10px]"></i>Менструация</span>
-        <span class="flex items-center gap-1.5"><i class="fa-solid fa-circle text-rose-200 text-[10px]"></i>Прогноз</span>
-        <span class="flex items-center gap-1.5"><i class="fa-solid fa-circle text-violet-500 text-[10px]"></i>Овуляция</span>
-        <span class="flex items-center gap-1.5"><i class="fa-solid fa-circle text-violet-100 text-[10px]"></i>Фертильные дни</span>
+        <span class="flex items-center gap-1.5"><i class="fa-solid fa-circle text-rose-500 text-[10px]"></i>${t("phases.period")}</span>
+        <span class="flex items-center gap-1.5"><i class="fa-solid fa-circle text-rose-200 text-[10px]"></i>${t("calendar.forecast")}</span>
+        <span class="flex items-center gap-1.5"><i class="fa-solid fa-circle text-violet-500 text-[10px]"></i>${t("phases.ovulation")}</span>
+        <span class="flex items-center gap-1.5"><i class="fa-solid fa-circle text-violet-100 text-[10px]"></i>${t("calendar.fertileDays")}</span>
       </div>
       <button onClick=${() => { setMonth(new Date(today.getFullYear(), today.getMonth(), 1)); setSelKey(todayKey); }}
-        class="mt-3 w-full text-sm text-rose-600 hover:bg-rose-50 rounded-xl py-2 transition"><i class="fa-solid fa-calendar-day mr-1.5"></i>Сегодня</button>
+        class="mt-3 w-full text-sm text-rose-600 hover:bg-rose-50 rounded-xl py-2 transition"><i class="fa-solid fa-calendar-day mr-1.5"></i>${t("calendar.today")}</button>
     </div>
 
     ${!periodSet.size && html`
       <div class="bg-rose-50 border border-rose-200 rounded-2xl p-4 text-sm text-rose-800">
-        Начните вести календарь: нажмите на день начала менструации и отметьте его кнопкой ниже. Приложение рассчитает цикл, овуляцию и фертильное окно.
+        ${t("calendar.getStarted")}
       </div>`}
 
     <div class="bg-white rounded-2xl shadow-sm border border-rose-100 p-4">
@@ -72,7 +73,7 @@ export default function CalendarView({
         <div>
           <div class="font-semibold text-slate-800">${fmtLong(fromKey(selKey))}</div>
           <div class="text-sm text-slate-500 mt-0.5">
-            ${phaseName(stSel, ctx)}${stSel.cycleDay != null ? ' · день цикла ' + stSel.cycleDay : ''}
+            ${t(phaseName(stSel, ctx))}${stSel.cycleDay != null ? t("calendar.cycleDay") + stSel.cycleDay : ''}
           </div>
         </div>
         ${!isFuture && html`
@@ -80,49 +81,49 @@ export default function CalendarView({
           class=${'text-sm rounded-full px-4 py-2 transition ' +
             (stSel.period ? 'bg-rose-100 text-rose-700 hover:bg-rose-200'
                           : 'bg-rose-600 text-white hover:bg-rose-700')}>
-          ${stSel.period ? html`<i class="fa-solid fa-xmark mr-1"></i>Убрать отметку`
-                         : html`<i class="fa-solid fa-droplet mr-1"></i>Менструация`}
+          ${stSel.period ? html`<i class="fa-solid fa-xmark mr-1"></i>${t("common.removeEntry")}`
+                         : html`<i class="fa-solid fa-droplet mr-1"></i>${t("phases.period")}`}
         </button>`}
       </div>
 
       ${isFuture ? html`
         <div class="mt-4 text-sm text-slate-400">
-          <i class="fa-solid fa-lock mr-1.5"></i>Отметки за будущие дни недоступны - данные вносятся только по факту, чтобы не искажать расчеты.
+          <i class="fa-solid fa-lock mr-1.5"></i>${t("calendar.futureNotice")}
         </div>` : html`
       <div class="mt-4">
-        <div class="text-xs text-slate-500 mb-2">Симптомы</div>
+        <div class="text-xs text-slate-500 mb-2">${t("calendar.symptoms")}</div>
         <div class="flex flex-wrap gap-2">
-          ${SYMPTOMS.map(s => html`
+          ${SYMPTOMS.map(({ value: s, labelId }) => html`
             <button key=${s} onClick=${() => onToggleSymptom(s)}
               class=${'text-xs rounded-full px-3 py-1.5 border transition ' +
                 ((selLog && selLog.symptoms || []).includes(s)
                   ? 'bg-violet-100 border-violet-300 text-violet-800'
                   : 'border-slate-200 text-slate-600 hover:border-violet-300')}>
-              ${s}
+              ${t(labelId)}
             </button>`)}
         </div>
       </div>
 
       <div class="mt-4">
-        <div class="text-xs text-slate-500 mb-2">Интимная жизнь</div>
+        <div class="text-xs text-slate-500 mb-2">${t("calendar.intimacy")}</div>
         <button onClick=${onToggleSex}
           class=${'text-sm rounded-full px-4 py-2 transition ' +
             (selLog && selLog.sex
               ? 'bg-rose-100 text-rose-700 hover:bg-rose-200'
               : 'bg-rose-600 text-white hover:bg-rose-700')}>
           ${selLog && selLog.sex
-            ? html`<i class="fa-solid fa-xmark mr-1.5"></i>Убрать отметку`
-            : html`<i class="fa-solid fa-heart mr-1.5"></i>Половой акт`}
+            ? html`<i class="fa-solid fa-xmark mr-1.5"></i>${t("common.removeEntry")}`
+            : html`<i class="fa-solid fa-heart mr-1.5"></i>${t("calendar.intercourse")}`}
         </button>
       </div>
 
       <div class="mt-4">
-        <div class="text-xs text-slate-500 mb-2">Заметка</div>
+        <div class="text-xs text-slate-500 mb-2">${t("calendar.note")}</div>
         <textarea rows="2" value=${noteDraft} onInput=${e => setNoteDraft(e.target.value)}
-          placeholder="Настроение, самочувствие, наблюдения…"
+          placeholder=${t("calendar.notePlaceholder")}
           class="w-full text-sm border border-slate-200 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-rose-300 resize-none"></textarea>
         <button onClick=${onSaveNote}
-          class="mt-2 text-sm bg-slate-800 text-white rounded-full px-4 py-2 hover:bg-slate-700 transition"><i class="fa-solid fa-floppy-disk mr-1.5"></i>Сохранить</button>
+          class="mt-2 text-sm bg-slate-800 text-white rounded-full px-4 py-2 hover:bg-slate-700 transition"><i class="fa-solid fa-floppy-disk mr-1.5"></i>${t("common.save")}</button>
       </div>`}
     </div>
   `;

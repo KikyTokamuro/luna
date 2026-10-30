@@ -1,3 +1,4 @@
+import { t, setLanguage } from './lib/i18n.js';
 import { render } from 'preact';
 import { useState, useEffect, useMemo } from 'preact/hooks';
 import { registerSW } from 'virtual:pwa-register';
@@ -49,6 +50,13 @@ function App() {
   const [periodSet, setPeriodSet] = useState(new Set());
   const [logs, setLogs] = useState({});
   const [settings, setSettings] = useState(DEFAULT_SETTINGS);
+  
+  setLanguage(settings.language);
+  useEffect(() => { 
+    document.documentElement.lang = settings.language || "ru"; 
+    document.title = t("app.name"); 
+  }, [settings.language]);
+  
   const [ready, setReady] = useState(false);
   const [month, setMonth] = useState(() => new Date(today.getFullYear(), today.getMonth(), 1));
   const [selKey, setSelKey] = useState(todayKey);
@@ -81,7 +89,9 @@ function App() {
       
         setLogs(m);
       
-        if (st) setSettings(st);
+        if (st) {
+          setSettings({ ...DEFAULT_SETTINGS, ...st });
+        }
       } catch (e) { 
         console.error(e); 
       }
@@ -228,7 +238,7 @@ function App() {
 
         if (data.settings) { 
           await kvSet('settings', data.settings); 
-          setSettings(data.settings); 
+          setSettings({ ...DEFAULT_SETTINGS, ...data.settings }); 
         }
         
         setPeriodSet(new Set(periods));
@@ -237,10 +247,11 @@ function App() {
         logRows.forEach(r => m[r.date] = r); 
         setLogs(m);
         
-        alert('Данные восстановлены');
+        alert(t("messages.restored"));
       } catch (err) { 
-        alert('Не удалось импортировать файл'); 
+        alert(t("messages.importFailed")); 
       }
+
       e.target.value = '';
     };
     
@@ -251,7 +262,7 @@ function App() {
    * Clear the database and reset state to defaults. 
    */
   const clearAll = async () => {
-    if (!confirm('Удалить все данные приложения? Это действие необратимо.')) return;
+    if (!confirm(t("messages.confirmDelete"))) return;
     
     await clearStore(STORE_PERIODS); 
     await clearStore(STORE_LOGS); 
@@ -263,7 +274,7 @@ function App() {
   };
 
   if (!ready) {
-    return html`<div class="min-h-screen flex items-center justify-center text-rose-500">Загрузка…</div>`;
+    return html`<div class="min-h-screen flex items-center justify-center text-rose-500">${t("app.loading")}</div>`;
   }
 
   return html`

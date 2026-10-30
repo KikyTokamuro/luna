@@ -1,0 +1,106 @@
+{
+  "stats": {
+    "history": "Cycle history",
+    "noCompletedCycles": "No completed cycles for",
+    "legend": "pink: period days; lavender: the rest of the cycle; dot: ovulation.",
+    "currentDay": "Current cycle day",
+    "averageCycle": "Average cycle",
+    "periodLength": "Period length",
+    "latePeriod": "Late period",
+    "nextPeriod": "Next period",
+    "intercourse": "Intercourse",
+    "totalEntries": "entries in total",
+    "intercourseMonth": "Intercourse this month",
+    "estimatedOvulation": "Estimated ovulation",
+    "total": "Total",
+    "thisMonth": "This month",
+    "mostRecent": "Most recent",
+    "averageFrequency": "Average frequency",
+    "moreEntriesNeeded": "at least 2 entries needed",
+    "noIntercourse": "Intercourse entries will appear here. Add them in the day panel on the Calendar tab.",
+    "disclaimer": "Predictions are estimates based on your average cycle length. The app is not a contraceptive method and does not replace medical advice.",
+    "untilNext": "until next: ",
+    "cycleNotRecorded": "cycle not recorded yet",
+    "recordPeriod": "record a period",
+    "basedOnLast": "based on the last ",
+    "cyclesSuffix": " cycles",
+    "every": "every "
+  },
+  "settings": {
+    "language": "Language",
+    "defaults": "Default settings",
+    "defaultsDescription": "Used for predictions until enough data is available. Over time, the app adapts to your cycle.",
+    "cycleLength": "Cycle length (days)",
+    "periodLength": "Period length (days)",
+    "data": "Data",
+    "dataDescription": "All data is stored locally in your browser (IndexedDB) and is never sent anywhere.",
+    "export": "Export (JSON)",
+    "import": "Import",
+    "deleteAll": "Delete all data",
+    "version": "Version",
+    "author": "Author website - kikytokamuro.space"
+  },
+  "app": {
+    "name": "Luna - cycle calendar",
+    "install": "Install",
+    "loading": "Loading…"
+  },
+  "nav": {
+    "calendar": "Calendar",
+    "stats": "Statistics",
+    "settings": "Settings"
+  },
+  "common": {
+    "save": "Save",
+    "removeEntry": "Remove entry",
+    "days": " days"
+  },
+  "calendar": {
+    "previousMonth": "Previous month",
+    "nextMonth": "Next month",
+    "forecast": "Forecast",
+    "fertileDays": "Fertile days",
+    "today": "Today",
+    "getStarted": "Start tracking: select the first day of your period and mark it using the button below. The app will calculate your cycle, ovulation, and fertile window.",
+    "futureNotice": "Future entries are unavailable. Record events after they happen to keep calculations accurate.",
+    "symptoms": "Symptoms",
+    "intimacy": "Intimacy",
+    "intercourse": "Intercourse",
+    "note": "Note",
+    "notePlaceholder": "Mood, wellbeing, observations…",
+    "previousYear": "Previous year",
+    "nextYear": "Next year",
+    "cycleDay": " · cycle day "
+  },
+  "phases": {
+    "period": "Period",
+    "ovulation": "Ovulation",
+    "fertile": "Fertile window",
+    "periodPredicted": "Expected period",
+    "follicular": "Follicular phase",
+    "luteal": "Luteal phase",
+    "transitional": "Transitional phase"
+  },
+  "messages": {
+    "restored": "Data restored",
+    "importFailed": "Could not import file",
+    "confirmDelete": "Delete all app data? This cannot be undone."
+  },
+  "symptoms": {
+    "cramps": "Cramps",
+    "headache": "Headache",
+    "fatigue": "Fatigue",
+    "breastTenderness": "Breast tenderness",
+    "moodSwings": "Mood swings",
+    "nausea": "Nausea",
+    "discharge": "Discharge",
+    "insomnia": "Insomnia"
+  },
+  "units": {
+    "cycleOne": "cycle",
+    "cycleFew": "cycles",
+    "cycleMany": "cycles",
+    "timesOne": "time(s)",
+    "timesFew": "times"
+  }
+}

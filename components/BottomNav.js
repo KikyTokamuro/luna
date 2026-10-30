@@ -1,9 +1,10 @@
+import { t } from '../lib/i18n.js';
 import { html } from '../lib/html.js';
 
 const TABS = [
-  ['calendar', 'fa-calendar-days', 'Календарь'],
-  ['stats', 'fa-chart-column', 'Статистика'],
-  ['settings', 'fa-gear', 'Настройки']
+  ['calendar', 'fa-calendar-days', "nav.calendar"],
+  ['stats', 'fa-chart-column', "nav.stats"],
+  ['settings', 'fa-gear', "nav.settings"]
 ];
 
 /**
@@ -21,7 +22,7 @@ export default function BottomNav({ tab, onTab }) {
           <button key=${id} onClick=${() => onTab(id)}
             class=${'py-2.5 text-center transition ' + (tab === id ? 'text-rose-600' : 'text-slate-400 hover:text-slate-600')}>
             <div class="text-lg leading-none"><i class=${'fa-solid ' + icon}></i></div>
-            <div class="text-xs mt-1">${label}</div>
+            <div class="text-xs mt-1">${t(label)}</div>
           </button>`)}
       </div>
     </nav>

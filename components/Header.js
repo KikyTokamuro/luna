@@ -1,3 +1,4 @@
+import { t } from '../lib/i18n.js';
 import { html } from '../lib/html.js';
 
 /**
@@ -13,12 +14,12 @@ export default function Header({ installEvt, onInstall }) {
       <div class="max-w-lg mx-auto px-4 py-3 flex items-center justify-between">
         <div class="flex items-center gap-2">
           <i class="fa-solid fa-droplet text-xl"></i>
-          <h1 class="font-semibold text-lg">Луна - календарь цикла</h1>
+          <h1 class="font-semibold text-lg">${t("app.name")}</h1>
         </div>
         ${installEvt && html`
           <button onClick=${onInstall}
             class="text-xs bg-white/20 hover:bg-white/30 rounded-full px-3 py-1.5 transition">
-            <i class="fa-solid fa-download mr-1"></i>Установить
+            <i class="fa-solid fa-download mr-1"></i>${t("app.install")}
           </button>`}
       </div>
     </header>
