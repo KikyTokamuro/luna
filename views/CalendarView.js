@@ -5,23 +5,23 @@ import { SYMPTOMS } from '../lib/constants.js';
 import DayCell from '../components/DayCell.js';
 
 /**
- * Вкладка "Календарь".
+ * Calendar tab.
  * @param {object} props
  * @param {Date} props.today
  * @param {string} props.todayKey
- * @param {Date} props.month первый день отображаемого месяца
+ * @param {Date} props.month first day of the displayed month
  * @param {(m: Date) => void} props.setMonth
- * @param {string} props.selKey выбранная дата
+ * @param {string} props.selKey выбранная date
  * @param {(key: string) => void} props.setSelKey
  * @param {Set<string>} props.periodSet
  * @param {Record<string, object>} props.logs
  * @param {object} props.ctx
- * @param {object} props.stSel статус выбранного дня
- * @param {object|null} props.selLog лог выбранного дня
+ * @param {object} props.stSel status of the selected day
+ * @param {object|null} props.selLog log for the selected day
  * @param {(key: string) => void} props.onTogglePeriod
  * @param {(sym: string) => void} props.onToggleSymptom
  * @param {() => void} props.onToggleSex
- * @param {string} props.noteDraft черновик заметки
+ * @param {string} props.noteDraft note draft
  * @param {(v: string) => void} props.setNoteDraft
  * @param {() => void} props.onSaveNote
  */

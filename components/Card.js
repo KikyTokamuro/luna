@@ -1,7 +1,7 @@
 import { html } from '../lib/html.js';
 
 /**
- * Карточка статистики.
+ * Statistics card.
  * @param {{
  *   title: string, 
  *   value: string|number, 

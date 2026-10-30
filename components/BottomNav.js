@@ -7,7 +7,7 @@ const TABS = [
 ];
 
 /**
- * Нижняя навигация по вкладкам.
+ * Bottom tab navigation.
  * @param {{
  *   tab: string, 
  *   onTab: (id: string) => void

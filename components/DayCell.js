@@ -2,7 +2,7 @@ import { html } from '../lib/html.js';
 import { toKey } from '../lib/dates.js';
 
 /**
- * Ячейка дня в календаре.
+ * Calendar day cell.
  * @param {{
  *   d: Date|null, 
  *   selKey: string, 

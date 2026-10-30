@@ -3,7 +3,7 @@ import { kvSet } from '../lib/db.js';
 import { APP_NAME, APP_VERSION, AUTHOR_URL } from '../lib/constants.js';
 
 /**
- * Вкладка "Настройки".
+ * Settings tab.
  * @param {{
  *   settings: object, 
  *   setSettings: (s: object) => void,
@@ -14,7 +14,7 @@ import { APP_NAME, APP_VERSION, AUTHOR_URL } from '../lib/constants.js';
  * }} props
  */
 export default function SettingsView({ settings, setSettings, periodSet, logs, onImport, onClearAll }) {
-  /** Экспорт {version, settings, periods, logs} как JSON-файл. */
+  /** Export {version, settings, periods, logs} as a JSON file. */
   const exportData = () => {
     const data = { version: 1, settings, periods: [...periodSet].sort(), logs: Object.values(logs) };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });

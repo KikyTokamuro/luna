@@ -18,8 +18,8 @@ import StatsView from './views/StatsView.js';
 import SettingsView from './views/SettingsView.js';
 
 /**
- * Запись лога "пустая" - нет ни симптомов, ни заметки, ни отметки полового акта.
- * Такие записи не храним: при сохранении удаляются из БД.
+ * A log is "empty" if it has no symptoms, note, or intercourse entry.
+ * Empty logs are removed from the database when saved.
  * @param {{
  *   symptoms?: string[],
  *   note?: string,
@@ -30,12 +30,12 @@ import SettingsView from './views/SettingsView.js';
 const isEmptyLog = rec => !(rec.symptoms && rec.symptoms.length) && !(rec.note || '').trim() && !rec.sex;
 
 /**
- * @property {Date} today текущий день (один раз на сессию)
- * @property {string} tab активная вкладка: calendar | stats | settings
- * @property {Set<string>} periodSet дни месячных (ключи 'YYYY-MM-DD')
- * @property {Record<string, object>} logs логи по дате: {date, note, symptoms[], sex?}
- * @property {{cycle: number, period: number}} settings дефолтная длина цикла/месячных
- * @property {string} selKey выбранная в календаре дата
+ * @property {Date} today current day (set once per session)
+ * @property {string} tab active tab: calendar | stats | settings
+ * @property {Set<string>} periodSet period days (keys 'YYYY-MM-DD')
+ * @property {Record<string, object>} logs logs by date: {date, note, symptoms[], sex?}
+ * @property {{cycle: number, period: number}} settings default cycle/period lengths
+ * @property {string} selKey date selected in the calendar
  */
 function App() {
   const today = useMemo(() => { 
@@ -55,15 +55,15 @@ function App() {
   const [noteDraft, setNoteDraft] = useState('');
   const [installEvt, setInstallEvt] = useState(null);
 
-  // Начальная загрузка + миграция: пустые записи логов (без симптомов, заметки
-  // и отметки полового акта) удаляем из БД, чтобы не оставались "мусорные" точки на календаре.
+  // Initial load and migration: remove empty log entries (without symptoms, note,
+  // or intercourse entry) from the database so they do not leave stray markers on the calendar.
   useEffect(() => {
     (async () => {
       try {
         const [days, logRows, st] = await Promise.all([all(STORE_PERIODS), all(STORE_LOGS), kvGet('settings')]);
 
-        // Миграция: убираем отметки будущих дат (могли попасть из старых
-        // версий или бэкапа) - они искажают день цикла и прогноз.
+        // Migration: remove future date entries (they may have come from older
+        // versions or a backup) because they distort cycle day and predictions.
         for (const x of days) {
           if (x.date > todayKey) await delRec(STORE_PERIODS, x.date);
         }
@@ -107,7 +107,7 @@ function App() {
   const selLog = logs[selKey] || null;
 
   /** 
-   * Переключение дня: ставит/снимает отметку месячных в БД и в состоянии. 
+   * Toggle a day: add or remove its period marker in the database and state. 
    * @param {string} key 
    */
   const togglePeriod = async key => {
@@ -127,8 +127,8 @@ function App() {
   };
 
   /**
-   * Единая точка записи лога дня: если запись пуста - удаляем ее из БД, иначе сохраняем.
-   * @param {string} key дата
+   * Single entry point for saving a day log: delete empty logs from the database, otherwise save them.
+   * @param {string} key date
    * @param {{
    *   date: string, 
    *   note: string, 
@@ -152,7 +152,7 @@ function App() {
   };
 
   /** 
-   * Добавляет/убирает симптом в логе выбранного дня. 
+   * Add or remove a symptom from the selected day log. 
    * @param {string} sym 
    */
   const toggleSymptom = async sym => {
@@ -165,7 +165,7 @@ function App() {
   };
 
   /**
-   * Ставит/снимает отметку полового акта в логе выбранного дня.
+   * Toggle the intercourse entry in the selected day log.
    */
   const toggleSex = async () => {
     if (selKey > todayKey) return;
@@ -176,7 +176,7 @@ function App() {
   };
 
   /** 
-   * Сохраняет черновик заметки. 
+   * Save the note draft. 
    */
   const saveNote = async () => {
     const cur = logs[selKey] || { date: selKey, note: '', symptoms: [] };
@@ -187,7 +187,7 @@ function App() {
   };
 
   /** 
-   * Показывает нативный диалог установки PWA (если браузер предложил). 
+   * Show the native PWA install prompt (if offered by the browser). 
    */
   const doInstall = async () => {
     if (!installEvt) return;
@@ -197,9 +197,9 @@ function App() {
   };
 
   /**
-   * Импорт бэкапа JSON: полностью заменяет локальные данные
-   * (periodDays, logs, settings). Пустые логи из файла отбрасываются.
-   * @param {Event} e change-событие <input type="file">
+   * Import a JSON backup: replace all local data
+   * (periodDays, logs, settings). Empty logs in the file are discarded.
+   * @param {Event} e change event from <input type="file">
    */
   const importData = e => {
     const f = e.target.files[0];
@@ -248,7 +248,7 @@ function App() {
   };
 
   /** 
-   * Полная очистка БД + сброс состояния в дефолты. 
+   * Clear the database and reset state to defaults. 
    */
   const clearAll = async () => {
     if (!confirm('Удалить все данные приложения? Это действие необратимо.')) return;
@@ -298,6 +298,6 @@ function App() {
 
 render(html`<${App} />`, document.getElementById('app'));
 
-// Регистрация service worker, сгенерированного vite-plugin-pwa:
-// precache всего билда, обновление кэша автоматически (autoUpdate).
+// Register the service worker generated by vite-plugin-pwa:
+// precache the entire build; update the cache automatically (autoUpdate).
 registerSW({ immediate: true });
