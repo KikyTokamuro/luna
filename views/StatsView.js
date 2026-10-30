@@ -4,7 +4,7 @@ import { toKey, fromKey, diffDays, fmtLong, fmtShort, MONTHS } from '../lib/date
 import Card from '../components/Card.js';
 
 /**
- * Склонение слова "цикл" по количеству.
+ * Decline the Russian word for "cycle" based on the count.
  * @param {number} n
  * @returns {string}
  */
@@ -16,7 +16,7 @@ const cycleWord = n => {
 };
 
 /**
- * Склонение слова "раз" по количеству.
+ * Decline the Russian word for "time" based on the count.
  * @param {number} n
  * @returns {string}
  */
@@ -28,7 +28,7 @@ const timesWord = n => {
 };
 
 /**
- * Вкладка "Статистика".
+ * Statistics tab.
  * @param {{
  *   today: Date,
  *   ctx: object,
@@ -40,7 +40,7 @@ export default function StatsView({ today, ctx, pred, logs }) {
   const curCycleDay = ctx.runs.length ? diffDays(today, fromKey(ctx.runs[ctx.runs.length - 1].start)) + 1 : null;
   const daysToNext = pred ? diffDays(pred.nextStart, today) : null;
 
-  // Отметки полового акта: всего, за текущий месяц, последняя дата, средний интервал.
+  // Отметки полового акта: всего, за текущий месяц, последняя date, средний интервал.
   const monthPrefix = toKey(new Date(today.getFullYear(), today.getMonth(), 1)).slice(0, 7);
   const sexKeys = Object.values(logs)
     .filter(l => l && l.sex && l.date <= toKey(today))

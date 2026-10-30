@@ -1,7 +1,7 @@
 import { html } from '../lib/html.js';
 
 /**
- * Шапка приложения.
+ * Application header.
  * @param {{
  *   installEvt: object|null, 
  *   onInstall: () => void
