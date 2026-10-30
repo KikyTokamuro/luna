@@ -1,79 +1,78 @@
-# Луна - календарь менструального цикла
+# Luna - Menstrual Cycle Calendar
 
-PWA для ведения календаря менструального цикла: отметки дней менструации, прогноз следующих месячных, овуляции и фертильного окна, дневник симптомов и заметок. Работает офлайн, данные хранятся локально в браузере.
+A PWA for tracking menstrual cycles: log period days, predict upcoming periods, ovulation, and the fertile window, and keep a diary of symptoms and notes. It works offline, and data is stored locally in the browser.
 
-## Разработка и сборка
+## Development and Build
 
-Стек: Vite + vite-plugin-pwa, Preact + htm, Tailwind CSS, Font Awesome - все зависимости локальные, без CDN.
+Stack: Vite + vite-plugin-pwa, Preact + htm, Tailwind CSS, Font Awesome. All dependencies are local; no CDN is used.
 
 ```bash
-npm install     # установка зависимостей
-npm run dev     # дев-сервер (http://localhost:5173)
-npm run build   # продакшен-сборка в dist/
-npm run preview # локальный просмотр собранной версии
+npm install     # install dependencies
+npm run dev     # development server (http://localhost:5173)
+npm run build   # production build in dist/
+npm run preview # preview the built version locally
 ```
 
-Сборка кладет весь билд (JS, CSS, шрифты, иконки, манифест) в precache service worker, поэтому после первой загрузки приложение полностью работает офлайн.
+The build adds all assets (JS, CSS, fonts, icons, and manifest) to the service worker precache, so the app works fully offline after the first load.
 
-## Возможности
+## Features
 
-- **Календарь** - отметка дней менструации одним нажатием, подсветка менструации, прогнозируемых месячных, дня овуляции и фертильных дней, в том числе **за прошлые циклы** (реконструируются из истории).
-- **Панель дня** - фаза цикла (менструальная, фолликулярная, овуляция, фертильное окно, лютеиновая, переходная), день цикла, симптомы, отметка полового акта и заметка.
-- **Статистика** - текущий день цикла, средняя длина цикла и менструации, дата следующей менструации, карточка "Прогноз", половые акты (всего, за месяц, последний раз, средняя частота), история циклов в виде столбцов с отметкой овуляции.
-- **Настройки** - дефолтная длина цикла/менструации (если истории мало), экспорт/импорт бэкапа JSON, полная очистка данных.
+- **Calendar** - mark period days with one tap; highlight recorded periods, predicted periods, ovulation days, and fertile days, including **past cycles** reconstructed from history.
+- **Day panel** - cycle phase (menstrual, follicular, ovulation, fertile window, luteal, transitional), cycle day, symptoms, intercourse log, and note.
+- **Statistics** - current cycle day, average cycle and period lengths, next period date, a “Forecast” card, intercourse statistics (total, this month, most recent, average frequency), and cycle history shown as bars with ovulation markers.
+- **Settings** - default cycle and period lengths (when there is little history), JSON backup export/import, and complete data deletion.
 
-## Хранение данных
+## Data Storage
 
-Все локально в IndexedDB (`luna-db`):
+Everything is stored locally in IndexedDB (`luna-db`):
 
-- `periodDays` - дни менструации;
-- `logs` - симптомы, заметки и отметка полового акта по датам;
-- `kv` - настройки.
+- `periodDays` - period days;
+- `logs` - symptoms, notes, and intercourse logs by date;
+- `kv` - settings.
 
-## Методы расчета и прогноза
+## Calculation and Prediction Methods
 
-### 1. Разбиение отметок на менструации (запуски)
+### 1. Grouping Marked Days into Periods (Runs)
 
-Отмеченные дни схлопываются в непрерывные интервалы. Дни с разницей <= 1 дня считаются одним запуском - это учитывает "переход через полночь" и случайно пропущенный день внутри менструации.
+Marked days are grouped into continuous intervals. Days with a gap of no more than one day are treated as one run. This accounts for crossing midnight and an accidentally missed day within a period.
 
-### 2. Длины циклов и менструаций
+### 2. Cycle and Period Lengths
 
-- **Длина менструации** запуска = конец − начало + 1 день.
-- **Длина цикла** = от начала (i−1)-го запуска до начала i-го. Первый запуск длину цикла не дает - нет предыдущего начала.
+- **Period length** for a run = end date − start date + 1 day.
+- **Cycle length** = time from the start of run (i−1) to the start of run i. The first run does not yield a cycle length because there is no previous start date.
 
-### 3. Усреднение (устойчивое к выбросам)
+### 3. Averaging (Resistant to Outliers)
 
-- За базу берутся **последние 6** циклов/менструаций.
-- Средняя длина цикла - **медиана** последних 6 (при >=3 циклах): единичный сбойный цикл (стресс, задержка) не сдвигает прогноз на несколько дней. При 1–2 циклах - обычное среднее.
-- Средняя длительность менструации - среднее последних 6 запусков.
-- Если истории нет - используются настройки (по умолчанию 28 / 5 дней).
+- Calculations use the **six most recent** cycles/periods.
+- Average cycle length is the **median** of the last six cycles when at least three are available. This prevents a single unusual cycle (due to stress or a delayed period, for example) from shifting the prediction by several days. With one or two cycles, the arithmetic mean is used.
+- Average period length is the arithmetic mean of the last six runs.
+- If there is no history, the app uses the settings (28 / 5 days by default).
 
-### 4. Овуляция и фертильное окно
+### 4. Ovulation and the Fertile Window
 
-Метод календарный, с допущением о **стабильной лютеиновой фазе** (~14 дней), что подтверждено исследованиями: фолликулярная фаза вариативна, а от овуляции до следующих месячных в среднем 12–14 дней.
+The calendar method assumes a **relatively stable luteal phase** (~14 days), as supported by research: the follicular phase varies, while the time from ovulation to the next period averages 12–14 days.
 
-- **Овуляция** = начало следующей менструации − 14 дней.
-- **Фертильное окно** = овуляция −5 … +1 день: сперматозоиды сохраняют жизнеспособность до 5 суток, яйцеклетка - около 1 суток.
+- **Ovulation** = start of the next period − 14 days.
+- **Fertile window** = from five days before ovulation through one day after it: sperm can remain viable for up to five days, and an egg for about one day.
 
-При реконструкции **завершенных** циклов началом "следующих" берется **фактическое** зафиксированное начало - это точнее, чем средняя длина цикла. Для **текущего** цикла (следующие месячные еще не отмечены) начало = последний старт + средняя длина цикла, и овуляция считается от него же.
+When reconstructing **completed** cycles, the app uses the **actual recorded** start of the next period, which is more accurate than using the average cycle length. For the **current** cycle (when the next period has not yet been recorded), the predicted start is the last recorded start plus the average cycle length; ovulation is calculated from that date.
 
-Границы овуляции клампятся в разумные пределы (не раньше 5-го дня цикла и не позже дня перед началом следующих месячных) на случай аномально коротких циклов в отметках.
+The ovulation date is constrained to reasonable bounds (no earlier than cycle day 5 and no later than the day before the next period starts) in case the recorded data contains an unusually short cycle.
 
-### 5. Прогноз менструаций
+### 5. Period Prediction
 
-Следующие менструации = последний зафиксированный старт + средняя длина цикла, длительность - средняя длина менструации. Прогнозируется один цикл вперед; прогнозируемые дни подсвечиваются в календаре только для текущего цикла - за прошлые циклы известны фактические данные.
+The next period is predicted to start on the last recorded start date plus the average cycle length and to last for the average period length. The app predicts one cycle ahead. Predicted days are highlighted in the calendar only for the current cycle, since actual data is available for past cycles.
 
-### 6. Фазы цикла (для панели дня)
+### 6. Cycle Phases (for the Day Panel)
 
-Каждый день привязывается к циклу, в который он попадает (последнему начавшемуся). День цикла считается от начала своего цикла. Фазы:
+Each day is assigned to the cycle it belongs to (the most recently started cycle). The cycle day is counted from the start of that cycle. Phases are:
 
-- **Менструальная** - отмеченный день менструации;
-- **Фолликулярная** - до фертильного окна;
-- **Фертильное окно** и **Овуляция** - по формулам выше;
-- **Лютеиновая** - после фертильного окна;
-- **Переходная** - прочее (в т.ч. дни до первой отметки, данных нет).
+- **Menstrual** - a marked period day;
+- **Follicular** - before the fertile window;
+- **Fertile window** and **Ovulation** - based on the formulas above;
+- **Luteal** - after the fertile window;
+- **Transitional** - all other days (including days before the first recorded period, when no data is available).
 
-## Точность и ограничения
+## Accuracy and Limitations
 
-Календарный метод - оценочный. Он опирается на регулярность прошлых циклов и не учитывает индивидуальные колебания, стресс, болезнь, препараты и т. п. Реальная овуляция может смещаться на 1–2 дня и более; при нерегулярном цикле прогноз менее точен. Приложение **не является средством контрацепции** и не заменяет консультацию врача - для контрацепции и планирования нужны более точные методы (тесты на овуляцию, измерение БТ, УЗИ).
-
+The calendar method provides estimates. It relies on the regularity of past cycles and does not account for individual variation, stress, illness, medication, and other factors. Actual ovulation may shift by one or two days or more; predictions are less accurate for irregular cycles. The app **is not a contraceptive method** and does not replace medical advice. Contraception and pregnancy planning require more accurate methods (ovulation tests, basal body temperature measurement, ultrasound).
